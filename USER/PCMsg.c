@@ -33,9 +33,9 @@ void InitUart1(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	//USART ³õÊ¼»¯ÉèÖÃ
+	//USART ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	USART_InitStructure.USART_BaudRate = 9600;//Ò»°ãÉèÖÃÎª9600;
+	USART_InitStructure.USART_BaudRate = 9600;//Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -44,23 +44,23 @@ void InitUart1(void)
 
 	USART_Init(USART1, &USART_InitStructure);
 
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//¿ªÆôÖÐ¶Ï
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 
-	USART_Cmd(USART1, ENABLE);                    //Ê¹ÄÜ´®¿Ú
+	USART_Cmd(USART1, ENABLE);                    //Ê¹ï¿½Ü´ï¿½ï¿½ï¿½
 	
 	
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		//
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨µÀÊ¹ÄÜ
-	NVIC_Init(&NVIC_InitStructure);	//¸ù¾ÝNVIC_InitStructÖÐÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯ÍâÉèNVIC¼Ä´æÆ÷USART1
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨ï¿½ï¿½Ê¹ï¿½ï¿½
+	NVIC_Init(&NVIC_InitStructure);	//ï¿½ï¿½ï¿½ï¿½NVIC_InitStructï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½NVICï¿½Ä´ï¿½ï¿½ï¿½USART1
 }
 
 void Uart1SendData(BYTE dat)
 {
-	while((USART1->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+	while((USART1->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	USART1->DR = (u8) dat;
-	while((USART1->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+	while((USART1->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 void UART1SendDataPacket(uint8 dat[],uint8 count)
@@ -69,9 +69,9 @@ void UART1SendDataPacket(uint8 dat[],uint8 count)
 	for(i = 0; i < count; i++)
 	{
 //		USART1_TransmitData(tx[i]);
-		while((USART1->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+		while((USART1->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		USART1->DR = dat[i];
-		while((USART1->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+		while((USART1->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 }
 
@@ -90,7 +90,7 @@ void USART1_IRQHandler(void)
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
 
-        rxBuf = USART_ReceiveData(USART1);//(USART1->DR);	//¶ÁÈ¡½ÓÊÕµ½µÄÊý¾Ý
+        rxBuf = USART_ReceiveData(USART1);//(USART1->DR);	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(!fFrameStart)
 		{
 			if(rxBuf == 0x55)
@@ -213,14 +213,14 @@ void TaskPCMsgHandle(void)
 					id =  UartRxBuffer[7 + i * 3];
 					pos = UartRxBuffer[8 + i * 3] + (UartRxBuffer[9 + i * 3]<<8);
 	
-					ServoSetPluseAndTime(id,pos,time);
+					
 					BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 				}				
  				break;
 			
 			case CMD_FULL_ACTION_RUN:
-				fullActNum = UartRxBuffer[4];//¶¯×÷×é±àºÅ
-				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//ÔËÐÐ´ÎÊý
+				fullActNum = UartRxBuffer[4];//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½
 				McuToPCSendData(CMD_FULL_ACTION_RUN, 0, 0);
 				FullActRun(fullActNum,times);
 				break;
@@ -245,8 +245,8 @@ void SaveAct(uint8 fullActNum,uint8 frameIndexSum,uint8 frameIndex,uint8* pBuffe
 {
 	uint8 i;
 	
-	if(frameIndex == 0)//ÏÂÔØÖ®Ç°ÏÈ°ÑÕâ¸ö¶¯×÷×é²Á³ý
-	{//Ò»¸ö¶¯×÷×éÕ¼16k´óÐ¡£¬²Á³ýÒ»¸öÉÈÇøÊÇ4k£¬ËùÒÔÒª²Á4´Î
+	if(frameIndex == 0)//ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½È°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	{//Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼16kï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½4ï¿½ï¿½
 		for(i = 0;i < 4;i++)//ACT_SUB_FRAME_SIZE/4096 = 4
 		{
 			FlashEraseSector((MEM_ACT_FULL_BASE) + (fullActNum * ACT_FULL_SIZE) + (i * 4096));
@@ -267,7 +267,7 @@ void SaveAct(uint8 fullActNum,uint8 frameIndexSum,uint8 frameIndex,uint8* pBuffe
 
 
 void FlashEraseAll(void)
-{//½«ËùÓÐ255¸ö¶¯×÷×éµÄ¶¯×÷ÊýÉèÖÃÎª0£¬¼´´ú±í½«ËùÓÐ¶¯×÷×é²Á³ý
+{//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½255ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	uint16 i;
 	
 	for(i = 0;i <= 255;i++)
@@ -290,7 +290,7 @@ void InitMemory(void)
 		if(logo[i] != datatemp[i])
 		{
 		LED = LED_ON;
-			//Èç¹û·¢ÏÖ²»ÏàµÈµÄ£¬ÔòËµÃ÷ÊÇÐÂFLASH£¬ÐèÒª³õÊ¼»¯
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ÈµÄ£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½FLASHï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ê¼ï¿½ï¿½
 			FlashEraseSector(MEM_LOBOT_LOGO_BASE);
 			FlashWrite(MEM_LOBOT_LOGO_BASE,5,logo);
 			FlashEraseAll();

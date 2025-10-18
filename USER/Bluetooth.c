@@ -28,9 +28,9 @@ void InitUart3(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	//USART ³õÊ¼»¯ÉèÖÃ
+	//USART ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	USART_InitStructure.USART_BaudRate = 9600;//Ò»°ãÉèÖÃÎª9600;
+	USART_InitStructure.USART_BaudRate = 9600;//Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -39,29 +39,29 @@ void InitUart3(void)
 
 	USART_Init(USART3, &USART_InitStructure);
 
-	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//¿ªÆôÖÐ¶Ï
+	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 
-	USART_Cmd(USART3, ENABLE);					  //Ê¹ÄÜ´®¿Ú
+	USART_Cmd(USART3, ENABLE);					  //Ê¹ï¿½Ü´ï¿½ï¿½ï¿½
 	
 	
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		//
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨µÀÊ¹ÄÜ
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨ï¿½ï¿½Ê¹ï¿½ï¿½
 	NVIC_Init(&NVIC_InitStructure);
 }
 
 
-void USART3_IRQHandler(void)                	//´®¿Ú3ÖÐ¶Ï·þÎñ³ÌÐò
+void USART3_IRQHandler(void)                	//ï¿½ï¿½ï¿½ï¿½3ï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	u8 rxBuf;
 	static uint8 startCodeSum = 0;
 	static bool fFrameStart = FALSE;
 	static uint8 messageLength = 0;
 	static uint8 messageLengthSum = 2;
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //½ÓÊÕÖÐ¶Ï(½ÓÊÕµ½µÄÊý¾Ý±ØÐëÊÇ0x0d 0x0a½áÎ²)
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½(ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½0x0d 0x0aï¿½ï¿½Î²)
 	{
-		rxBuf =USART_ReceiveData(USART3);//(USART1->DR);	//¶ÁÈ¡½ÓÊÕµ½µÄÊý¾Ý
+		rxBuf =USART_ReceiveData(USART3);//(USART1->DR);	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		if(!fFrameStart)
 		{
@@ -120,9 +120,9 @@ void USART3SendDataPacket(uint8 tx[],uint32 count)
 	uint32 i;
 	for(i = 0; i < count; i++)
 	{
-		while((USART3->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+		while((USART3->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		USART3->DR = tx[i];
-		while((USART3->SR&0X40)==0);//Ñ­»··¢ËÍ,Ö±µ½·¢ËÍÍê±Ï
+		while((USART3->SR&0X40)==0);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 }
 
@@ -189,14 +189,14 @@ void TaskBLEMsgHandle(void)
 					id =  UartRxBuffer[7 + i * 3];
 					pos = UartRxBuffer[8 + i * 3] + (UartRxBuffer[9 + i * 3]<<8);
 	
-					ServoSetPluseAndTime(id,pos,time);
+					
 					BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 				}
  				break;
 			
 			case CMD_FULL_ACTION_RUN:
-				fullActNum = UartRxBuffer[4];//¶¯×÷×é±àºÅ
-				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//ÔËÐÐ´ÎÊý
+				fullActNum = UartRxBuffer[4];//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½
 				McuToPCSendData(CMD_FULL_ACTION_RUN, 0, 0);
 				FullActRun(fullActNum,times);
 				break;
