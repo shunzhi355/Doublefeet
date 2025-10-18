@@ -124,42 +124,6 @@ void TaskRobotRun(void)
 							{
 								FullActRun(101,1);
 							}
-							else if (ActFullNum == 101)
-							{
-								FullActRun(102,1);
-							}
-							else if (ActFullNum == 102)
-							{
-								FullActRun(103,1);
-							}
-							else if (ActFullNum == 103)
-							{
-								FullActRun(104,1);
-							}
-							else if (ActFullNum == 104)
-							{
-								FullActRun(105,1);
-							}
-							else if (ActFullNum == 105)
-							{
-								FullActRun(106,1);
-							}
-							else if (ActFullNum == 106)
-							{
-								FullActRun(107,1);
-							}
-							else if (ActFullNum == 107)
-							{
-								FullActRun(108,1);
-							}
-							else if (ActFullNum == 108)
-							{
-								FullActRun(109,1);
-							}
-							else if (ActFullNum == 109)
-							{
-								FullActRun(110,1);
-							}
 						}
 					}
 				}
