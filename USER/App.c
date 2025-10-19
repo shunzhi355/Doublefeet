@@ -325,7 +325,7 @@ void TaskRun(void)
 			if(KEY == 0)
 			{
 					LED = ~LED;
-					FullActRun(100,0);	
+					FullActRun(100,1);	
 			}
 		}
 	}

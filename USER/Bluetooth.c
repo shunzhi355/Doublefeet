@@ -58,10 +58,10 @@ void USART3_IRQHandler(void)                	//串口3中断服务程序
 	static uint8 startCodeSum = 0;
 	static bool fFrameStart = FALSE;
 	static uint8 messageLength = 0;
-	static uint8 messageLengthSum = 2;
+	static uint8 messageLengthSum = 0;
 	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
 	{
-		rxBuf =USART_ReceiveData(USART3);//(USART1->DR);	//读取接收到的数据
+		rxBuf =USART_ReceiveData(USART3);//(USART3->DR);	//读取接收到的数据
 
 		if(!fFrameStart)
 		{
@@ -73,7 +73,7 @@ void USART3_IRQHandler(void)                	//串口3中断服务程序
 				{
 					startCodeSum = 0;
 					fFrameStart = TRUE;
-					messageLength = 1;
+					messageLength = 0;
 				}
 			}
 			else
@@ -81,33 +81,51 @@ void USART3_IRQHandler(void)                	//串口3中断服务程序
 
 				fFrameStart = FALSE;
 				messageLength = 0;
-	
 				startCodeSum = 0;
 			}
 			
 		}
-		if(fFrameStart)
-		{
-			UartRxBuffer[messageLength] = rxBuf;
-			if(messageLength == 2)
-			{
-				messageLengthSum = UartRxBuffer[messageLength];
-				if(messageLengthSum < 2)// || messageLengthSum > 30
-				{
-					messageLengthSum = 2;
-					fFrameStart = FALSE;
+		// if(fFrameStart)
+		// {
+		// 	UartRxBuffer[messageLength] = rxBuf;
+		// 	if(messageLength == 0)
+		// 	{
+		// 		messageLengthSum = UartRxBuffer[messageLength];
+		// 		if(messageLengthSum < 1)// || messageLengthSum > 30
+		// 		{
+		// 			messageLengthSum = 2;
+		// 			fFrameStart = FALSE;
+				
+		// 		}
 					
-				}
-					
-			}
-			messageLength++;
+		// 	}
+		// 	messageLength++;
+		else  // 已检测到起始码，接收有效数据
+        {
+            UartRxBuffer[messageLength] = rxBuf;
+            
+            // 第1个有效字节是长度字段（N）
+            if(messageLength == 0)
+            {
+                messageLengthSum = UartRxBuffer[0];
+                // 过滤无效长度（根据实际协议调整范围）
+                if(messageLengthSum < 1 || messageLengthSum > 255)
+                {
+                    fFrameStart = FALSE;
+                    messageLength = 0;
+                    return;
+                }
+            }
+            
+            messageLength++;
 	
-			if(messageLength == messageLengthSum + 2) 
+			if(messageLength == messageLengthSum +2 ) 
 			{
 
 				fUartRxComplete = TRUE;
 
 				fFrameStart = FALSE;
+				messageLength = 0;  // 重置，准备下一次接收
 			}
 		}
 
@@ -122,7 +140,7 @@ void USART3SendDataPacket(uint8 tx[],uint32 count)
 	{
 		while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
 		USART3->DR = tx[i];
-		while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
+		//while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
 	}
 }
 
@@ -143,17 +161,17 @@ void McuToPCSendDataByBLE(uint8 cmd,uint8 prm1,uint8 prm2)
 {
 	uint8 dat[8];
 	uint8 datlLen = 2;
-	switch(cmd)
-	{
+// 	switch(cmd)
+// 	{
 
-//		case CMD_ACTION_DOWNLOAD:
-//			datlLen = 2;
-//			break;
+// //		case CMD_ACTION_DOWNLOAD:
+// //			datlLen = 2;
+// //			break;
 
-		default:
-			datlLen = 2;
-			break;
-	}
+// 		default:
+// 			datlLen = 2;
+// 			break;
+// 	}
 
 	dat[0] = 0x55;
 	dat[1] = 0x55;
@@ -161,7 +179,7 @@ void McuToPCSendDataByBLE(uint8 cmd,uint8 prm1,uint8 prm2)
 	dat[3] = cmd;
 	dat[4] = prm1;
 	dat[5] = prm2;
-	USART3SendDataPacket(dat,datlLen + 2);
+	USART3SendDataPacket(dat,8);
 }
 
 void TaskBLEMsgHandle(void)
@@ -178,24 +196,36 @@ void TaskBLEMsgHandle(void)
 	if(UartRxOK())
 	{
 		LED = !LED;
-		cmd = UartRxBuffer[3];
+		cmd = UartRxBuffer[1];
  		switch(cmd)
  		{
  			case CMD_MULT_SERVO_MOVE:
-				servoCount = UartRxBuffer[4];
-				time = UartRxBuffer[5] + (UartRxBuffer[6]<<8);
+				servoCount = UartRxBuffer[2];
+				time = UartRxBuffer[3] + (UartRxBuffer[4]<<8);
 				for(i = 0; i < servoCount; i++)
 				{
-					id =  UartRxBuffer[7 + i * 3];
-					pos = UartRxBuffer[8 + i * 3] + (UartRxBuffer[9 + i * 3]<<8);
+					id =  UartRxBuffer[5 + i * 3];
+					pos = UartRxBuffer[6 + i * 3] + (UartRxBuffer[7 + i * 3]<<8);
+
+					
 					BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 				}
+				// 添加回传逻辑，通知上位机命令已执行
+    			McuToPCSendDataByBLE(CMD_MULT_SERVO_MOVE, servoCount, 0); // 回传舵机数量作为参数
+    
  				break;
 			
 			case CMD_FULL_ACTION_RUN:
-				fullActNum = UartRxBuffer[4];//动作组编号
-				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//运行次数
-				McuToPCSendData(CMD_FULL_ACTION_RUN, 0, 0);
+				fullActNum = UartRxBuffer[2];//动作组编号
+				if (UartRxBuffer[0] >= 3) { // 长度字段至少为3（命令+2字节参数）
+        		times = UartRxBuffer[4] + (UartRxBuffer[5] << 8);
+    			}		 
+				else 
+				{
+        		times = 0; // 长度错误时强制为0（避免异常）
+    			}
+    			// 使用串口3的回传函数，正确填充长度和参数
+    			McuToPCSendDataByBLE(CMD_FULL_ACTION_RUN, fullActNum, times& 0xFF);
 				FullActRun(fullActNum,times);
 				break;
 				
