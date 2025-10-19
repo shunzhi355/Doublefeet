@@ -33,9 +33,9 @@ void InitUart1(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	//USART ��ʼ������
+	//USART 初始化设置
 
-	USART_InitStructure.USART_BaudRate = 9600;//һ������Ϊ9600;
+	USART_InitStructure.USART_BaudRate = 9600;//一般设置为9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -44,23 +44,23 @@ void InitUart1(void)
 
 	USART_Init(USART1, &USART_InitStructure);
 
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//�����ж�
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//开启中断
 
-	USART_Cmd(USART1, ENABLE);                    //ʹ�ܴ���
+	USART_Cmd(USART1, ENABLE);                    //使能串口
 	
 	
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		//
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQͨ��ʹ��
-	NVIC_Init(&NVIC_InitStructure);	//����NVIC_InitStruct��ָ���Ĳ�����ʼ������NVIC�Ĵ���USART1
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
+	NVIC_Init(&NVIC_InitStructure);	//根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器USART1
 }
 
 void Uart1SendData(BYTE dat)
 {
-	while((USART1->SR&0X40)==0);//ѭ������,ֱ���������
+	while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
 	USART1->DR = (u8) dat;
-	while((USART1->SR&0X40)==0);//ѭ������,ֱ���������
+	while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
 }
 
 void UART1SendDataPacket(uint8 dat[],uint8 count)
@@ -69,9 +69,9 @@ void UART1SendDataPacket(uint8 dat[],uint8 count)
 	for(i = 0; i < count; i++)
 	{
 //		USART1_TransmitData(tx[i]);
-		while((USART1->SR&0X40)==0);//ѭ������,ֱ���������
+		while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
 		USART1->DR = dat[i];
-		while((USART1->SR&0X40)==0);//ѭ������,ֱ���������
+		while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
 	}
 }
 
@@ -90,7 +90,7 @@ void USART1_IRQHandler(void)
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
 
-        rxBuf = USART_ReceiveData(USART1);//(USART1->DR);	//��ȡ���յ�������
+        rxBuf = USART_ReceiveData(USART1);//(USART1->DR);	//读取接收到的数据
 		if(!fFrameStart)
 		{
 			if(rxBuf == 0x55)
@@ -219,8 +219,8 @@ void TaskPCMsgHandle(void)
  				break;
 			
 			case CMD_FULL_ACTION_RUN:
-				fullActNum = UartRxBuffer[4];//��������
-				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//���д���
+				fullActNum = UartRxBuffer[4];//动作组编号
+				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//运行次数
 				McuToPCSendData(CMD_FULL_ACTION_RUN, 0, 0);
 				FullActRun(fullActNum,times);
 				break;
@@ -245,8 +245,8 @@ void SaveAct(uint8 fullActNum,uint8 frameIndexSum,uint8 frameIndex,uint8* pBuffe
 {
 	uint8 i;
 	
-	if(frameIndex == 0)//����֮ǰ�Ȱ�������������
-	{//һ��������ռ16k��С������һ��������4k������Ҫ��4��
+	if(frameIndex == 0)//下载之前先把这个动作组擦除
+	{//一个动作组占16k大小，擦除一个扇区是4k，所以要擦4次
 		for(i = 0;i < 4;i++)//ACT_SUB_FRAME_SIZE/4096 = 4
 		{
 			FlashEraseSector((MEM_ACT_FULL_BASE) + (fullActNum * ACT_FULL_SIZE) + (i * 4096));
@@ -267,7 +267,7 @@ void SaveAct(uint8 fullActNum,uint8 frameIndexSum,uint8 frameIndex,uint8* pBuffe
 
 
 void FlashEraseAll(void)
-{//������255��������Ķ���������Ϊ0�������������ж��������
+{//将所有255个动作组的动作数设置为0，即代表将所有动作组擦除
 	uint16 i;
 	
 	for(i = 0;i <= 255;i++)
@@ -290,7 +290,7 @@ void InitMemory(void)
 		if(logo[i] != datatemp[i])
 		{
 		LED = LED_ON;
-			//������ֲ���ȵģ���˵������FLASH����Ҫ��ʼ��
+			//如果发现不相等的，则说明是新FLASH，需要初始化
 			FlashEraseSector(MEM_LOBOT_LOGO_BASE);
 			FlashWrite(MEM_LOBOT_LOGO_BASE,5,logo);
 			FlashEraseAll();

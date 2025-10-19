@@ -10,7 +10,7 @@
 #define LED_OFF		1
 
 
-extern u32 gSystemTickCount;	//系统从启动到现在的毫秒数
+extern u32 gSystemTickCount;	//绯荤粺浠庡惎鍔ㄥ埌鐜板湪鐨勬绉掓暟
 
 void InitDelay(u8 SYSCLK);
 void DelayMs(u16 nms);

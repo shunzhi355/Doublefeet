@@ -89,8 +89,12 @@ uint16 ActSubFrameRun(uint8 fullActNum,uint8 frameIndex)
 	{
 		id =  frame[3 + i * 3];
 		pos = frame[4 + i * 3] + (frame[5 + i * 3]<<8);
+		 // 排除舵机1和5
+        if(id != 1 && id != 5)
+        {
+            BusServoCtrl(id, SERVO_MOVE_TIME_WRITE, pos, time);
+        }
 		
-		BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 	}
 	return time;
 }

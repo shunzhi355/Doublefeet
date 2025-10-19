@@ -1,6 +1,6 @@
 
 #include "include.h"
-
+uint8 testData = 0xAA;
 
 int main(void)
 {
@@ -32,7 +32,14 @@ int main(void)
 	while(1)
 	{
 		TaskRun();			//主控制程序
-		
+		// 初始化后立即发送测试数据
+	
+	
+    // 每隔1秒发送一次0xAA
+//     while((USART3->SR & 0X80) == 0);  // 等待发送缓冲区空
+//     USART3->DR = testData;
+//     DelayMs(1000);
+	}
 		//以下是LED闪烁测试代码，默认情况下请将其注释掉不使用，当需要测试主板LED功能时再取消注释进行使用，使用完恢复注释
 		/*
 		LED = 0 ;				//LED开
@@ -40,6 +47,6 @@ int main(void)
 		LED = 1 ;				//LED关
 		DelayMs(500);   //延时500ms
 		*/
-	}
 }
+
 

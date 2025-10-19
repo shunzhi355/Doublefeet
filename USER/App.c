@@ -267,7 +267,7 @@ void TIM2_IRQHandler(void)   //TIM2中断
 				timeBattery++;
 				if(timeBattery > 5000)//持续5秒
 				{
-					BuzzerState = 1;
+					BuzzerState = 0; //关闭蜂鸣器
 				}
 			}
 			else

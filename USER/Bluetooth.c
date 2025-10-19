@@ -28,9 +28,9 @@ void InitUart3(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	//USART ��ʼ������
+	//USART 初始化设置
 
-	USART_InitStructure.USART_BaudRate = 9600;//һ������Ϊ9600;
+	USART_InitStructure.USART_BaudRate = 9600;//一般设置为9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -39,29 +39,29 @@ void InitUart3(void)
 
 	USART_Init(USART3, &USART_InitStructure);
 
-	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//�����ж�
+	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//开启中断
 
-	USART_Cmd(USART3, ENABLE);					  //ʹ�ܴ���
+	USART_Cmd(USART3, ENABLE);					  //使能串口
 	
 	
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		//
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQͨ��ʹ��
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
 	NVIC_Init(&NVIC_InitStructure);
 }
 
 
-void USART3_IRQHandler(void)                	//����3�жϷ������
+void USART3_IRQHandler(void)                	//串口3中断服务程序
 {
 	u8 rxBuf;
 	static uint8 startCodeSum = 0;
 	static bool fFrameStart = FALSE;
 	static uint8 messageLength = 0;
 	static uint8 messageLengthSum = 2;
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //�����ж�(���յ������ݱ�����0x0d 0x0a��β)
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
 	{
-		rxBuf =USART_ReceiveData(USART3);//(USART1->DR);	//��ȡ���յ�������
+		rxBuf =USART_ReceiveData(USART3);//(USART1->DR);	//读取接收到的数据
 
 		if(!fFrameStart)
 		{
@@ -120,9 +120,9 @@ void USART3SendDataPacket(uint8 tx[],uint32 count)
 	uint32 i;
 	for(i = 0; i < count; i++)
 	{
-		while((USART3->SR&0X40)==0);//ѭ������,ֱ���������
+		while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
 		USART3->DR = tx[i];
-		while((USART3->SR&0X40)==0);//ѭ������,ֱ���������
+		while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
 	}
 }
 
@@ -188,15 +188,13 @@ void TaskBLEMsgHandle(void)
 				{
 					id =  UartRxBuffer[7 + i * 3];
 					pos = UartRxBuffer[8 + i * 3] + (UartRxBuffer[9 + i * 3]<<8);
-	
-					
 					BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 				}
  				break;
 			
 			case CMD_FULL_ACTION_RUN:
-				fullActNum = UartRxBuffer[4];//��������
-				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//���д���
+				fullActNum = UartRxBuffer[4];//动作组编号
+				times = UartRxBuffer[5] + (UartRxBuffer[6]<<8);//运行次数
 				McuToPCSendData(CMD_FULL_ACTION_RUN, 0, 0);
 				FullActRun(fullActNum,times);
 				break;
