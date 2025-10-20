@@ -1,6 +1,6 @@
 
 #include "include.h"
-uint8 testData = 0xAA;
+//uint8 testData = 0xAA;
 static uint8 UartRxBuffer[260];
 static bool fUartRxComplete = FALSE;
 int main(void)

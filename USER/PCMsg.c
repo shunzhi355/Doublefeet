@@ -161,13 +161,13 @@ void McuToPCSendData(uint8 cmd,uint8 prm1,uint8 prm2)
 //			break;
 
 		default:
-			datlLen = 5;
+			datlLen = 2;
 			break;
 	}
 
 	dat[0] = 0x55;
 	dat[1] = 0x55;
-	dat[2] = prm2;
+	dat[2] = datlLen;
 	dat[3] = cmd;
 	dat[4] = prm1;
 	dat[5] = prm2;
@@ -213,7 +213,6 @@ void TaskPCMsgHandle(void)
 					id =  UartRxBuffer[7 + i * 3];
 					pos = UartRxBuffer[8 + i * 3] + (UartRxBuffer[9 + i * 3]<<8);
 	
-					
 					BusServoCtrl(id,SERVO_MOVE_TIME_WRITE,pos,time);
 				}				
  				break;

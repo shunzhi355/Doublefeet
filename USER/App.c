@@ -267,7 +267,7 @@ void TIM2_IRQHandler(void)   //TIM2中断
 				timeBattery++;
 				if(timeBattery > 5000)//持续5秒
 				{
-					BuzzerState = 0; //关闭蜂鸣器
+					BuzzerState = 1; //关闭蜂鸣器
 				}
 			}
 			else
@@ -325,7 +325,7 @@ void TaskRun(void)
 			if(KEY == 0)
 			{
 					LED = ~LED;
-					FullActRun(100,1);	
+					FullActRun(100,0);	
 			}
 		}
 	}
